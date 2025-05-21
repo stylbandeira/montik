@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('id_produto_variacoes')->index();
             $table->foreignId('id_opcoes_variacoes')->index();
+            $table->timestamps();
         });
     }
 

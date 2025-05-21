@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('nome_variacao');
             $table->string('descricao_variacao');
+            $table->timestamps();
         });
     }
 

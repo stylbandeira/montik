@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('id_variacao')->index();
             $table->decimal('valor');
+            $table->timestamps();
         });
     }
 

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->float('subtotal')->nullable();
             $table->float('descontos')->nullable();
             $table->float('total')->nullable();
+            $table->timestamps();
         });
     }
 

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('tipo_desconto');
             $table->float('desconto');
             $table->integer('quantidade');
+            $table->timestamps();
         });
     }
 

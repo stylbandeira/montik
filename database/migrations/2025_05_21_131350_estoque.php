@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('id_produto_variacoes')->nullable()->index();
             $table->integer('quantidade');
+            $table->timestamps();
         });
     }
 

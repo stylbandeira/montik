@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('id_pedido')->index();
             $table->foreignId('id_produto')->index();
+            $table->timestamps();
         });
     }
 

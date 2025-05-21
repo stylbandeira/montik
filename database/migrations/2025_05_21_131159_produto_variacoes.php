@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('id_variacao')->nullable()->index();
             $table->foreignId('id_produto')->nullable()->index();
             $table->float('preco_variacao');
+            $table->timestamps();
         });
     }
 
