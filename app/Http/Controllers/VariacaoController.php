@@ -14,7 +14,10 @@ class VariacaoController extends Controller
      */
     public function index()
     {
-        //
+        $variacoes = Variacao::all();
+        return response([
+            'variacoes' => $variacoes
+        ]);
     }
 
     /**
@@ -35,13 +38,16 @@ class VariacaoController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request->all());
         $request->validate([
             'nome_variacao' => 'required|string',
             'descricao_variacao' => 'required|string',
         ]);
 
-        Variacao::create($request->all());
+        $variacao = Variacao::create($request->all());
+        return response([
+            'message' => 'Variação criada com sucesso',
+            'variacao' => $variacao
+        ]);
     }
 
     /**
@@ -50,9 +56,19 @@ class VariacaoController extends Controller
      * @param  \App\Models\Variacao  $variacao
      * @return \Illuminate\Http\Response
      */
-    public function show(Variacao $variacao)
+    public function show(Int $id)
     {
-        //
+        $variacao = Variacao::find($id);
+
+        if ($variacao) {
+            return response([
+                'variacao' => $variacao
+            ]);
+        } else {
+            return response([
+                'message' => 'Variação não encontrada'
+            ], 404);
+        }
     }
 
     /**
@@ -73,9 +89,21 @@ class VariacaoController extends Controller
      * @param  \App\Models\Variacao  $variacao
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Variacao $variacao)
+    public function update(Request $request, Int $id)
     {
-        //
+        $variacao = Variacao::find($id);
+
+        if ($variacao) {
+            $variacao->update($request->all());
+            return response([
+                'message' => 'Variação alterada com sucesso!',
+                'variacao' => $variacao
+            ]);
+        } else {
+            return response([
+                'message' => 'Variação não encontrada'
+            ], 404);
+        }
     }
 
     /**
