@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\OpcoesVariacoesController;
 use App\Http\Controllers\ProdutoController;
 use App\Http\Controllers\VariacaoController;
+use App\Models\OpcoesVariacoes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -22,3 +24,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::resource('variacoes', VariacaoController::class);
 Route::resource('produtos', ProdutoController::class);
+Route::resource('opcoesvariacoes', OpcoesVariacoesController::class);
