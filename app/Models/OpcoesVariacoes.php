@@ -10,4 +10,9 @@ class OpcoesVariacoes extends Model
 {
     use HasFactory;
     use SoftDeletes;
+
+    public function variacao()
+    {
+        return $this->belongsTo(Variacao::class, 'id_variacao', 'id');
+    }
 }
