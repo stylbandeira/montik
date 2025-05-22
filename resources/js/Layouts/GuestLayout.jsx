@@ -1,18 +1,31 @@
 import ApplicationLogo from '@/Components/ApplicationLogo';
+import Header from '@/Components/Header';
 import { Link } from '@inertiajs/react';
 
 export default function Guest({ children }) {
     return (
-        <div className="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
-            <div>
-                <Link href="/">
-                    <ApplicationLogo className="w-20 h-20 fill-current text-gray-500" />
-                </Link>
-            </div>
+        <>
+            <nav className="navbar navbar-expand-lg navbar-dark bg-dark p-4">
+                <div className="container-fluid">
+                    <Link className="navbar-brand" href="/">
+                        Montink
+                    </Link>
+                    <div className="navbar-expand-md" id="navbarNav">
+                        <ul className="navbar-nav ms-auto">
+                            <li className="nav-item">
+                                <Link className="nav-link active" href="/produtos">
+                                    Produtos
+                                </Link>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
 
-            <div className="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
+
+            <main className='container my-5'>
                 {children}
-            </div>
-        </div>
+            </main>
+        </>
     );
 }
