@@ -13,9 +13,16 @@ class VariacaoController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $variacoes = Variacao::all();
+        $query = Variacao::query();
+
+        if ($request->with_options) {
+            $query->has('opcoes');
+        }
+
+        $variacoes = $query->with('opcoes')->get();
+
         return response([
             'variacoes' => $variacoes
         ]);
