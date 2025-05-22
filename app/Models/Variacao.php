@@ -13,4 +13,9 @@ class Variacao extends Model
         'descricao_variacao'
     ];
     protected $table = 'variacoes';
+
+    public function opcoes()
+    {
+        return $this->hasMany(OpcoesVariacoes::class, 'id_variacao', 'id');
+    }
 }
