@@ -117,8 +117,21 @@ class VariacaoController extends Controller
      * @param  \App\Models\Variacao  $variacao
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Variacao $variacao)
+    public function destroy(Int $id)
     {
-        //
+        $variacao = Variacao::find($id);
+
+        if (!$variacao) {
+            return response([
+                'message' => 'Variacao não encontrada'
+            ], 404);
+        }
+
+        $variacao->delete();
+
+        return response([
+            'message' => 'Variacao deletada com sucesso!',
+            'variacao' => $variacao
+        ]);
     }
 }
