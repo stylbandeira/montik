@@ -17,4 +17,14 @@ class Produto extends Model
         'preco',
         'descricao'
     ];
+
+    public function variacoes()
+    {
+        return $this->hasMany(Variacao::class, 'id_produto', 'id');
+    }
+
+    public function estoque()
+    {
+        return $this->hasMany(Estoque::class, 'id_produto', 'id');
+    }
 }
