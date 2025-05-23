@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\EstoqueController;
 use App\Http\Controllers\OpcoesVariacoesController;
 use App\Http\Controllers\ProdutoController;
 use App\Http\Controllers\VariacaoController;
@@ -25,3 +26,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::resource('variacoes', VariacaoController::class);
 Route::resource('produtos', ProdutoController::class);
 Route::resource('opcoesvariacoes', OpcoesVariacoesController::class);
+Route::resource('estoques', EstoqueController::class);
