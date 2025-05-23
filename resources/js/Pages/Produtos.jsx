@@ -5,8 +5,6 @@ import axios from 'axios';
 
 export default function Produtos() {
     const { produtos } = usePage().props;
-    const { props } = usePage();
-    const successMessage = props.flash?.success;
 
     const [nomeProduto, setNomeProduto] = useState('');
     const [descricaoProduto, setDescricaoProduto] = useState('');
@@ -77,12 +75,6 @@ export default function Produtos() {
     return (
         <GuestLayout>
             <Head title="Montink" />
-
-            {successMessage && (
-                <div className="alert alert-success">
-                    {successMessage}
-                </div>
-            )}
 
 
             <div className="row">
@@ -201,12 +193,25 @@ export default function Produtos() {
 
                 <div className="col-4 bg-secondary text-white border-start p-4">
                     <h1 className='text-center'>Lista de Produtos</h1>
-                    <ul className='bg-white text-black'>
+                    <ul className='list-group'>
                         {produtos.map(produto => (
-                            <li key={produto.id}>{produto.nome}</li>
+                            <li key={produto.id} className="list-group-item d-flex justify-content-between align-items-center">
+                                <div className="d-flex align-items-center gap-2">
+                                    <span className="badge bg-primary rounded-pill">{produto.estoque_sum_quantidade ?? 0}</span>
+                                    <span>{produto.nome}</span>
+                                </div>
+
+                                {console.log(produtos)}
+
+                                <div className="btn-group">
+                                    <button className="btn btn-sm btn-warning">Editar</button>
+                                    <button className="btn btn-sm btn-danger">Excluir</button>
+                                </div>
+                            </li>
                         ))}
                     </ul>
                 </div>
+
             </div>
         </GuestLayout>
     );
