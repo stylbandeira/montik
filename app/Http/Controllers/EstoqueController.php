@@ -78,6 +78,7 @@ class EstoqueController extends Controller
         }
 
         $estoque = new Estoque();
+        $estoque->id_produto = $produto->id;
         $estoque->id_produto_variacoes = $produto_variacoes->id;
         $estoque->quantidade = $request->quantidadeProduto;
         $estoque->save();
