@@ -17,7 +17,7 @@ class ProdutoController extends Controller
     public function index()
     {
 
-        $produtos = Produto::all();
+        $produtos = Produto::withSum('estoque', 'quantidade')->get();
 
         return response([
             'produtos' => $produtos
@@ -31,7 +31,7 @@ class ProdutoController extends Controller
      */
     public function create()
     {
-        $produtos = Produto::all();
+        $produtos = Produto::withSum('estoque', 'quantidade')->get();
 
         return Inertia::render('Produtos', [
             'produtos' => $produtos
