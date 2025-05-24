@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Estoque;
+use App\Models\OpcoesVariacoes;
 use App\Models\Produto;
 use App\Models\ProdutoVariacoes;
 use App\Models\ProdutoVariacoesOpcoes;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class EstoqueController extends Controller
@@ -74,8 +76,10 @@ class EstoqueController extends Controller
             $produto_opcoes = new ProdutoVariacoesOpcoes();
             $produto_opcoes->id_produto_variacoes = $produto_variacoes->id;
             $produto_opcoes->id_opcoes_variacoes = $value['opcao_id'];
+            $produto_variacoes->sku .= mb_strtoupper(mb_substr(OpcoesVariacoes::find($produto_opcoes->id_opcoes_variacoes)->valor, 0, 3,)) . '-';
             $produto_opcoes->save();
         }
+        $produto_variacoes->save();
 
         $estoque = new Estoque();
         $estoque->id_produto = $produto->id;
