@@ -10,12 +10,8 @@ export default function Produtos() {
     const [descricaoProduto, setDescricaoProduto] = useState('');
     const [precoProduto, setPrecoProduto] = useState(0);
     const [quantidadeProduto, setQuantidadeProduto] = useState(0);
-
-    const [produto, setProduto] = useState({
-        nome: '',
-        descricao: '',
-        preco: '',
-    });
+    const [modoEdicao, setModoEdicao] = useState(false);
+    const [produtoEditando, setProdutoEditando] = useState(null);
 
     const [variacoes, setVariacoes] = useState([]);
     const [variacoesSelecionadas, setVariacoesSelecionadas] = useState([
@@ -44,6 +40,25 @@ export default function Produtos() {
         ]);
     };
 
+    const limparFormulario = () => {
+        setNomeProduto('');
+        setDescricaoProduto('');
+        setPrecoProduto(0);
+        setQuantidadeProduto(0);
+        setVariacoesSelecionadas([{ variacao_id: '', opcao_id: '', opcoes: [] }]);
+    };
+
+
+    const handleEditarProduto = (produto) => {
+        setNomeProduto(produto.nome);
+        setDescricaoProduto(produto.descricao);
+        setPrecoProduto(produto.preco);
+        setQuantidadeProduto(produto.estoque_sum_quantidade ?? 0);
+        setProdutoEditando(produto);
+        setModoEdicao(true);
+    };
+
+
     const handleSubmit = (e) => {
         e.preventDefault();
         const data = {
@@ -54,14 +69,30 @@ export default function Produtos() {
             quantidadeProduto
         };
 
-        axios.post('/api/estoques', data)
-            .then(response => {
-                alert(response.data.message)
-            })
-            .catch(error => {
-                console.log(error)
-                alert('Erro ao cadastrar estoque')
-            })
+        if (modoEdicao && produtoEditando) {
+            axios.put(`/api/produtos/${produtoEditando.id}`, data)
+                .then(response => {
+                    alert(response.data.message);
+                    setModoEdicao(false);
+                    setProdutoEditando(null);
+                    limparFormulario();
+                })
+                .catch(error => {
+                    console.log(error);
+                    alert('Erro ao editar produto');
+                });
+        } else {
+            axios.post('/api/estoques', data)
+                .then(response => {
+
+                    alert(response.data.message);
+                    limparFormulario();
+                })
+                .catch(error => {
+                    console.log(error);
+                    alert('Erro ao cadastrar produto');
+                });
+        }
     }
 
     const variacoesJaSelecionadas = variacoesSelecionadas.map(v => parseInt(v.variacao_id));
@@ -75,19 +106,20 @@ export default function Produtos() {
     return (
         <GuestLayout>
             <Head title="Montink" />
+            {console.log(produtos[0]['variacoes_produto'])}
 
 
             <div className="row">
                 <div className="col-8 bg-light p-4">
                     <form className='p-4 border rounded bg-light' onSubmit={handleSubmit}>
-                        <h2>Adicionar Produto</h2>
+                        <h2>{produtoEditando ? 'Editar Produto' : 'Adicionar Produto'}</h2>
 
                         <div className="mb-3 flex justify-between align-items-center">
                             <label className='mr-3'>Nome do Produto</label>
                             <input
                                 className='flex-grow-1'
                                 type="text"
-                                value={setProduto.nome}
+                                value={nomeProduto}
                                 name='nomeProduto'
                                 onChange={(e) => setNomeProduto(e.target.value)}
                             />
@@ -97,7 +129,7 @@ export default function Produtos() {
                             <input
                                 className='flex-grow-1'
                                 type="text"
-                                value={setProduto.nome}
+                                value={descricaoProduto}
                                 name='descricaoProduto'
                                 onChange={(e) => setDescricaoProduto(e.target.value)}
                             />
@@ -107,7 +139,7 @@ export default function Produtos() {
                             <input
                                 className='flex-grow-1'
                                 type="text"
-                                value={setProduto.nome}
+                                value={precoProduto}
                                 name='precoProduto'
                                 onChange={(e) => setPrecoProduto(e.target.value)}
                             />
@@ -124,6 +156,7 @@ export default function Produtos() {
                                         className="form-select"
                                         value={item.variacao_id}
                                         onChange={e => handleVariacaoChange(index, e.target.value)}
+                                        disabled={!(produtoEditando == null)}
                                     >
                                         <option value="">Selecione uma variação</option>
                                         {variacoes
@@ -159,7 +192,6 @@ export default function Produtos() {
                                 </div>
 
                                 <div className="col-md-2">
-                                    {console.log(variacoesSelecionadas)}
                                     {index === variacoesSelecionadas.length - 1 && (
                                         <button
                                             type="button"
@@ -183,6 +215,7 @@ export default function Produtos() {
                                 className='col-md-6'
                                 type="number"
                                 placeholder='Digite um número'
+                                value={quantidadeProduto}
                                 onChange={(e) => setQuantidadeProduto(e.target.value)}
                             />
                         </div>
@@ -192,7 +225,7 @@ export default function Produtos() {
                 </div>
 
                 <div className="col-4 bg-secondary text-white border-start p-4">
-                    <h1 className='text-center'>Lista de Produtos</h1>
+                    <h1 className='text-center'>Estoque</h1>
                     <ul className='list-group'>
                         {produtos.map(produto => (
                             <li key={produto.id} className="list-group-item d-flex justify-content-between align-items-center">
@@ -201,10 +234,11 @@ export default function Produtos() {
                                     <span>{produto.nome}</span>
                                 </div>
 
-                                {console.log(produtos)}
-
                                 <div className="btn-group">
-                                    <button className="btn btn-sm btn-warning">Editar</button>
+                                    <button
+                                        className="btn btn-sm btn-warning"
+                                        onClick={() => handleEditarProduto(produto)}
+                                    >Editar</button>
                                     <button className="btn btn-sm btn-danger">Excluir</button>
                                 </div>
                             </li>
