@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Produto;
+use App\Models\ProdutoVariacoes;
+use App\Models\ProdutoVariacoesOpcoes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
@@ -25,13 +27,20 @@ class ProdutoController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new resource.'
      *
      * @return \Illuminate\Http\Response
      */
     public function create()
     {
-        $produtos = Produto::withSum('estoque', 'quantidade')->get();
+        $produtos = Produto::withSum('estoque', 'quantidade')
+            ->with([
+                'variacoesProduto.opcoes',
+                'variacoesProduto.estoque',
+                'estoque.produto',
+                'estoque.produto_variacoes.opcoes.opcao.variacao'
+            ])
+            ->get();
 
         return Inertia::render('Produtos', [
             'produtos' => $produtos
