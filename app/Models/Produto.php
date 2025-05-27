@@ -27,4 +27,9 @@ class Produto extends Model
     {
         return $this->hasMany(Estoque::class, 'id_produto', 'id');
     }
+
+    public function variacoesProduto()
+    {
+        return $this->hasMany(ProdutoVariacoes::class, 'id_produto', 'id');
+    }
 }
