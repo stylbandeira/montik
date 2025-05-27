@@ -225,7 +225,7 @@ export default function Produtos() {
                 </div>
 
                 <div className="col-4 bg-secondary text-white border-start p-4">
-                    <h1 className='text-center'>Estoque</h1>
+                    <h1 className='text-center'>Edição</h1>
                     <ul className='list-group'>
                         {produtos.map(produto => (
                             <li key={produto.id} className="list-group-item d-flex justify-content-between align-items-center">
@@ -236,10 +236,10 @@ export default function Produtos() {
 
                                 <div className="btn-group">
                                     <button
-                                        className="btn btn-sm btn-warning"
+                                        className="btn btn-sm btn-primary"
                                         onClick={() => handleEditarProduto(produto)}
-                                    >Editar</button>
-                                    <button className="btn btn-sm btn-danger">Excluir</button>
+                                    >Produto</button>
+                                    <button className="btn btn-sm btn-primary">Estoque</button>
                                 </div>
                             </li>
                         ))}
