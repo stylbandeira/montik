@@ -10,6 +10,7 @@ use App\Models\ProdutoVariacoesOpcoes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
 
 class EstoqueController extends Controller
 {
@@ -20,8 +21,36 @@ class EstoqueController extends Controller
      */
     public function index(Request $request)
     {
-        //
+        $produtosEmEstoque = Estoque::with(['produto_variacoes', 'produto'])
+            ->get();
+
+        $array = [];
+
+        foreach ($produtosEmEstoque as $estoque) {
+            // dd(
+            //     $estoque->produto->variacoes_disponiveis
+            // );
+            $item = [
+                'id_produto' => $estoque->id_produto,
+                'nome_produto' => $estoque->produto->nome,
+                'descricao_produto' => $estoque->produto->descricao,
+                'variacoes' => [],
+                'quantidade' => $estoque->quantidade
+            ];
+
+            foreach ($estoque->produto_variacoes->opcoes as $p_variacao_opcao) {
+                $item['variacoes'][$p_variacao_opcao->opcao->variacao->nome_variacao] = $p_variacao_opcao->opcao->valor;
+            }
+
+            $array[] = $item;
+        }
+
+
+        return Inertia::render('Comprar', [
+            'estoque' => $array
+        ]);
     }
+
 
     /**
      * Show the form for creating a new resource.
