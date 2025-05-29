@@ -13,8 +13,20 @@ export default function Guest({ children }) {
                     <div className="navbar-expand-md" id="navbarNav">
                         <ul className="navbar-nav ms-auto">
                             <li className="nav-item">
-                                <Link className="nav-link active" href="/produtos">
-                                    Produtos
+                                <Link className="nav-link active" href="/comprar">
+                                    Comprar
+                                </Link>
+                            </li>
+
+                            <li className="nav-item">
+                                <Link className="nav-link active" href="/login">
+                                    Login
+                                </Link>
+                            </li>
+
+                            <li className="nav-item">
+                                <Link className="nav-link active" href="/register">
+                                    Register
                                 </Link>
                             </li>
                         </ul>

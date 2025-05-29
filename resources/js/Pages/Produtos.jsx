@@ -2,6 +2,7 @@ import GuestLayout from '@/Layouts/GuestLayout.jsx';
 import { Head, router, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 export default function Produtos() {
     const { produtos } = usePage().props;
@@ -104,7 +105,7 @@ export default function Produtos() {
     }, []);
 
     return (
-        <GuestLayout>
+        <>
             <Head title="Montink" />
             {console.log(produtos[0]['variacoes_produto'])}
 
@@ -247,6 +248,8 @@ export default function Produtos() {
                 </div>
 
             </div>
-        </GuestLayout>
+        </>
     );
 }
+
+Produtos.layout = page => <AuthenticatedLayout children={page} />
