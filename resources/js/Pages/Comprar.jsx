@@ -16,7 +16,17 @@ export default function Comprar() {
 
         const carrinhoSalvo = JSON.parse(localStorage.getItem('carrinho')) || [];
         setCart(carrinhoSalvo);
-    }, [])
+        setUuid();
+    }, []);
+
+    const setUuid = () => {
+        let uuid = localStorage.getItem('uuid');
+
+        if (!uuid) {
+            uuid = crypto.randomUUID();
+            localStorage.setItem('uuid', uuid);
+        }
+    }
 
     const handleSubmit = (e, item) => {
         e.preventDefault();
@@ -36,6 +46,7 @@ export default function Comprar() {
         for (let [key, value] of formData.entries()) {
             if (key !== 'quantidade') {
                 const variacaoSelecionada = JSON.parse(value);
+                produto.id_produto_variacao = variacaoSelecionada.id;
                 produto.variacoes[key] = {
                     id_produto_variacao: variacaoSelecionada.id,
                     valor: variacaoSelecionada.valor,
