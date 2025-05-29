@@ -11,9 +11,7 @@ class ProdutoVariacoes extends Model
 
     public function opcoes()
     {
-        return $this->belongsToMany(OpcoesVariacoes::class, 'produto_variacoes_opcoes', 'id_produto_variacoes', 'id_opcoes_variacoes')
-            ->withPivot('id')
-            ->withTimestamps();
+        return $this->hasMany(ProdutoVariacoesOpcoes::class, 'id_produto_variacoes');
     }
 
     public function estoque()

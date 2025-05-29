@@ -20,7 +20,7 @@ class Produto extends Model
 
     public function variacoes()
     {
-        return $this->hasMany(ProdutoVariacoes::class, 'id_produto', 'id');
+        return $this->hasMany(Variacao::class, 'id_produto', 'id');
     }
 
     public function estoque()
@@ -31,18 +31,5 @@ class Produto extends Model
     public function variacoesProduto()
     {
         return $this->hasMany(ProdutoVariacoes::class, 'id_produto', 'id');
-    }
-
-    public function getVariacoesDisponiveisAttribute()
-    {
-
-        return $this->whereHas('variacoes', function ($query) {
-            $query->whereHas('estoque', function ($query) {
-                $query->where('quantidade', '>', 0);
-            });
-        })
-            ->whereHas('variacoes.opcoes')
-            ->with('variacoes.opcoes.variacao')
-            ->get();
     }
 }
