@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import Frete from './Frete';
+import { router } from '@inertiajs/react';
 
 export default function Carrinho(cart) {
     const [carrinho, setCarrinho] = useState([]);
@@ -28,21 +29,6 @@ export default function Carrinho(cart) {
         })
     };
 
-    const finalizarCompra = async () => {
-        const uuid = localStorage.getItem('uuid');
-        try {
-            await axios.post('/pedidos', {
-                carrinho,
-                uuid
-            })
-
-            localStorage.removeItem('carrinho');
-        } catch (error) {
-            console.error('Erro ao finalizar compra', error);
-            alert('Ocorreu um erro ao finalizar sua compra. Tente novamente');
-        }
-    };
-
     return (
         <div className="container mt-5">
             <h2 className="mb-4">Itens no Carrinho</h2>
@@ -57,7 +43,6 @@ export default function Carrinho(cart) {
 
                         {carrinho.map((item, index) => (
                             < div key={index} className="list-group-item" >
-                                {console.log(cart.cart)}
                                 <h5>Produto ID: {item.id_produto}</h5>
                                 <h6 className='money'>{handleMoneyValue(item.valor_produto)}</h6>
 
@@ -87,17 +72,6 @@ export default function Carrinho(cart) {
                         </div>
                     </div>
 
-                    <div className="ms-auto d-flex">
-                        <Frete></Frete>
-                    </div>
-
-                    <div className="card mt-4">
-                        <input type="text" name="" id="" placeholder='Digite o Cupom' />
-                    </div>
-
-                    <div className="card mt-4">
-                        <button onClick={finalizarCompra} className='btn btn-success'>Comprar Carrinho</button>
-                    </div>
                 </div>
             )
             }
