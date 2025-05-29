@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Produto;
-use App\Models\ProdutoVariacoes;
-use App\Models\ProdutoVariacoesOpcoes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
@@ -19,12 +17,78 @@ class ProdutoController extends Controller
     public function index()
     {
 
-        $produtos = Produto::withSum('estoque', 'quantidade')->get();
+        $produtos = Produto::with('variacoesDisponiveis')
+            ->with('estoque.produto_variacoes.opcoes.variacao')
+            ->withSum('estoque', 'quantidade')->get();
 
         return response([
             'produtos' => $produtos
         ]);
     }
+
+    public function list()
+    {
+        $produtos = Produto::with('variacoesDisponiveis')
+            ->with('estoque.produto_variacoes.opcoes.variacao')
+            ->withSum('estoque', 'quantidade')->get();
+
+        return Inertia::render('Comprar', [
+            'produtos' => $produtos
+        ]);
+    }
+
+    public function variacoesDisponiveis()
+    {
+        $produtos = Produto::with([
+            'estoque' => function ($q) {
+                $q->where('quantidade', '>', 0)
+                    ->with([
+                        'produto_variacoes.opcoes.variacao'
+                    ]);
+            }
+        ])->get();
+
+        $resultado = [];
+
+        foreach ($produtos as $produto) {
+            $produtoFormatado = [
+                'id_produto' => $produto->id,
+                'nome_produto' => $produto->nome,
+                'descricao_produto' => $produto->descricao,
+                'quantidade_total' => $produto->estoque_sum_quantidade ?? 0,
+                'valor_produto' => $produto->preco,
+                'variacoes_disponiveis' => []
+            ];
+
+            foreach ($produto->estoque as $estoque) {
+                foreach ($estoque->produto_variacoes->opcoes as $opcao) {
+                    $nomeVariacao = $opcao->variacao->nome_variacao;
+
+                    $produtoFormatado['variacoes_disponiveis'][$nomeVariacao][] = [
+                        'id_opcao' => $opcao->id,
+                        'id_variacao' => $opcao->id_variacao,
+                        'id_produto_variacao' => $estoque->produto_variacoes->id,
+                        'valor' => $opcao->valor,
+                        'estoque_id' => $estoque->id,
+                        'quantidade' => $estoque->quantidade,
+                    ];
+                }
+            }
+
+            // Remove duplicatas por id_opcao em cada variação
+            foreach ($produtoFormatado['variacoes_disponiveis'] as $nome => $opcoes) {
+                $produtoFormatado['variacoes_disponiveis'][$nome] = collect($opcoes)
+                    ->unique('id_opcao')
+                    ->values()
+                    ->toArray();
+            }
+
+            $resultado[] = $produtoFormatado;
+        }
+
+        return response()->json($resultado);
+    }
+
 
     /**
      * Show the form for creating a new resource.'
@@ -37,8 +101,7 @@ class ProdutoController extends Controller
             ->with([
                 'variacoesProduto.opcoes',
                 'variacoesProduto.estoque',
-                'estoque.produto',
-                'estoque.produto_variacoes.opcoes.opcao.variacao'
+                'estoque.produto'
             ])
             ->get();
 
