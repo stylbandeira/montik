@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\EstoqueController;
 use App\Http\Controllers\ProdutoController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
@@ -17,16 +19,30 @@ use Inertia\Inertia;
 |
 */
 
+// Route::get('/', function () {
+//     return Inertia::render('Welcome', [
+//         'canLogin' => Route::has('login'),
+//         'canRegister' => Route::has('register'),
+//         'laravelVersion' => Application::VERSION,
+//         'phpVersion' => PHP_VERSION,
+//     ]);
+// });
+
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
+    return Inertia::render(('Home'));
 });
 
-Route::get('/produtos', [ProdutoController::class, 'create'])->name('produto.create');
+// Route::get('/produtos', [ProdutoController::class, 'create'])->name('produto.create');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/produtos', [ProdutoController::class, 'create'])->name('produtos.create');
+    Route::get('/logout', [AuthenticatedSessionController::class, 'destroy']);
+});
+
+// Route::get('/comprar', function () {
+//     return Inertia::render('Comprar');
+// });
+
+Route::get('/comprar', [ProdutoController::class, 'list'])->name('produto.list');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
