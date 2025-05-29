@@ -1,6 +1,6 @@
 import Carrinho from '@/Components/Carrinho';
 import GuestLayout from '@/Layouts/GuestLayout';
-import { usePage } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 
@@ -26,6 +26,10 @@ export default function Comprar() {
             uuid = crypto.randomUUID();
             localStorage.setItem('uuid', uuid);
         }
+    }
+
+    const checkout = () => {
+        router.get('/pedidos');
     }
 
     const handleSubmit = (e, item) => {
@@ -75,7 +79,6 @@ export default function Comprar() {
                             <h2 className="mb-3">{item.nome_produto}</h2>
                             <p className="text-muted">{item.descricao_produto}</p>
                             <p className="text-muted" key="valor_produto" value={item.valor_produto}>R$: {item.valor_produto}</p>
-                            {/* {console.log(cart)} */}
 
                             <form onSubmit={(e) => handleSubmit(e, item)} className="mt-4" data-produto-id={item.id_produto}>
                                 <div className="row g-3">
@@ -131,6 +134,10 @@ export default function Comprar() {
             <div className="col-md-6 card">
                 <div className="sticky-cart">
                     <Carrinho cart={cart}></Carrinho>
+                </div>
+
+                <div className="card mt-4">
+                    <button className='btn btn-success' onClick={checkout}>Continuar para checkout</button>
                 </div>
             </div>
         </div>
