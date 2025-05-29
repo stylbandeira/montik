@@ -1,20 +1,17 @@
 import { useEffect, useState } from 'react';
 import Frete from './Frete';
 
-export default function Carrinho() {
+export default function Carrinho(cart) {
     const [carrinho, setCarrinho] = useState([]);
     const [valorTotal, setValorTotal] = useState(0);
 
-    const valorTotalFormatado = valorTotal.toLocaleString('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-    });
-
     useEffect(() => {
-        const itensSalvos = JSON.parse(localStorage.getItem('carrinho')) || [];
-        setCarrinho(itensSalvos);
+        const carrinho = cart.cart;
 
-    }, []);
+        if (carrinho && carrinho.length > 0) {
+            setCarrinho(carrinho);
+        }
+    }, [cart]);
 
     useEffect(() => {
         const totalCarrinho = carrinho.reduce((soma, item) => {
@@ -45,6 +42,7 @@ export default function Carrinho() {
 
                         {carrinho.map((item, index) => (
                             < div key={index} className="list-group-item" >
+                                {console.log(cart.cart)}
                                 <h5>Produto ID: {item.id_produto}</h5>
                                 <h6 className='money'>{handleMoneyValue(item.valor_produto)}</h6>
 
@@ -68,8 +66,8 @@ export default function Carrinho() {
                         ))}
                     </div>
 
-                    <div class="d-flex mb-3">
-                        <div class="ms-auto p-2">
+                    <div className="d-flex mb-3">
+                        <div className="ms-auto p-2">
                             <h5><strong>Total: {handleMoneyValue(valorTotal)}</strong></h5>
                         </div>
                     </div>

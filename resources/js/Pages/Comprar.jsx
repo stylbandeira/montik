@@ -13,6 +13,9 @@ export default function Comprar() {
             .then(response => {
                 setItens(response.data)
             })
+
+        const carrinhoSalvo = JSON.parse(localStorage.getItem('carrinho')) || [];
+        setCart(carrinhoSalvo);
     }, [])
 
     const handleSubmit = (e, item) => {
@@ -40,21 +43,11 @@ export default function Comprar() {
                 };
             }
         }
+        const carrinhoAtual = [...cart, produto];
+        localStorage.setItem('carrinho', JSON.stringify(carrinhoAtual));
+        setCart(carrinhoAtual);
 
-        console.log(produto);
-
-        // Recupera o carrinho atual
-        let carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
-
-        // Adiciona o produto ao carrinho
-        carrinho.push(produto);
-
-        // Salva de volta no localStorage
-        localStorage.setItem('carrinho', JSON.stringify(carrinho));
-
-        console.log(localStorage.getItem('carrinho'));
-
-        //Remove os itens do carrinho -- REMOVER
+        //Remove os itens do carrinho -- REMOVER AO FIM
         // localStorage.setItem('carrinho', JSON.stringify([]));
 
         alert('Produto adicionado ao carrinho!');
@@ -71,7 +64,7 @@ export default function Comprar() {
                             <h2 className="mb-3">{item.nome_produto}</h2>
                             <p className="text-muted">{item.descricao_produto}</p>
                             <p className="text-muted" key="valor_produto" value={item.valor_produto}>R$: {item.valor_produto}</p>
-                            {console.log(item)}
+                            {/* {console.log(cart)} */}
 
                             <form onSubmit={(e) => handleSubmit(e, item)} className="mt-4" data-produto-id={item.id_produto}>
                                 <div className="row g-3">
@@ -126,7 +119,7 @@ export default function Comprar() {
             </div>
             <div className="col-md-6 card">
                 <div className="sticky-cart">
-                    <Carrinho></Carrinho>
+                    <Carrinho cart={cart}></Carrinho>
                 </div>
             </div>
         </div>
