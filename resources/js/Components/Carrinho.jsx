@@ -28,6 +28,21 @@ export default function Carrinho(cart) {
         })
     };
 
+    const finalizarCompra = async () => {
+        const uuid = localStorage.getItem('uuid');
+        try {
+            await axios.post('/pedidos', {
+                carrinho,
+                uuid
+            })
+
+            localStorage.removeItem('carrinho');
+        } catch (error) {
+            console.error('Erro ao finalizar compra', error);
+            alert('Ocorreu um erro ao finalizar sua compra. Tente novamente');
+        }
+    };
+
     return (
         <div className="container mt-5">
             <h2 className="mb-4">Itens no Carrinho</h2>
@@ -81,7 +96,7 @@ export default function Carrinho(cart) {
                     </div>
 
                     <div className="card mt-4">
-                        <button>Comprar Carrinho</button>
+                        <button onClick={finalizarCompra} className='btn btn-success'>Comprar Carrinho</button>
                     </div>
                 </div>
             )
