@@ -12,6 +12,7 @@ class PrePedido extends Model
     use SoftDeletes;
 
     protected $table = 'pre_pedido';
+    protected $fillable = ['uuid'];
 
     public function produtos()
     {
