@@ -10,4 +10,13 @@ class Cupom extends Model
 {
     use HasFactory;
     use SoftDeletes;
+
+    protected $table = 'cupons';
+    protected $fillable = [
+        'valido_ate',
+        'tipo_desconto',
+        'desconto',
+        'quantidade',
+        'codigo'
+    ];
 }
