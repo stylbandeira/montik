@@ -57,5 +57,6 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::post('/pedidos', [PedidoController::class, 'store'])->name('pedido.store');
+Route::get('/pedidos', [PedidoController::class, 'create'])->name('pedido.create');
 
 require __DIR__ . '/auth.php';
