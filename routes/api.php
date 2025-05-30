@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CupomController;
 use App\Http\Controllers\EstoqueController;
 use App\Http\Controllers\OpcoesVariacoesController;
 use App\Http\Controllers\ProdutoController;
@@ -29,3 +30,4 @@ Route::get('produtos/variacoes-disponiveis', [ProdutoController::class, 'variaco
 Route::resource('produtos', ProdutoController::class);
 Route::resource('opcoesvariacoes', OpcoesVariacoesController::class);
 Route::resource('estoques', EstoqueController::class);
+Route::resource('cupons', CupomController::class);
