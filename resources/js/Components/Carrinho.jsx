@@ -2,25 +2,60 @@ import { useEffect, useState } from 'react';
 import Frete from './Frete';
 import { router } from '@inertiajs/react';
 
-export default function Carrinho(cart) {
+export default function Carrinho({ cart, cupomAplicado }) {
     const [carrinho, setCarrinho] = useState([]);
+    const [totalParcial, setTotalParcial] = useState(0);
     const [valorTotal, setValorTotal] = useState(0);
+    const [descontoCupom, setDescontoCupom] = useState(0);
+    // const [cupomAplicado, setCupomAplicado] = useState([]);
+    const [carregandoCupom, setCarregandoCupom] = useState(true)
 
     useEffect(() => {
-        const carrinho = cart.cart;
+        const carrinho = cart;
 
         if (carrinho && carrinho.length > 0) {
             setCarrinho(carrinho);
         }
+
+        carregaCupom();
     }, [cart]);
 
     useEffect(() => {
+        const carrinho = cart;
+
+        if (carrinho && carrinho.length > 0) {
+            setCarrinho(carrinho);
+        }
+
+        carregaCupom();
+    });
+
+    const carregaCupom = () => {
         const totalCarrinho = carrinho.reduce((soma, item) => {
             return soma + (parseFloat(item.total_parcial) || 0);
         }, 0);
 
-        setValorTotal(totalCarrinho);
-    });
+        let desconto = 0;
+
+        if (cupomAplicado) {
+            if (cupomAplicado.tipo_desconto === 'VAL') {
+                desconto = cupomAplicado.desconto;
+            } else if (cupomAplicado.tipo_desconto === 'PCT') {
+                desconto = totalCarrinho * cupomAplicado.desconto / 100;
+            }
+
+            setDescontoCupom(desconto);
+        }
+
+        if (cupomAplicado) {
+            setTotalParcial(totalCarrinho);
+            setValorTotal(totalCarrinho - desconto);
+        } else {
+            setValorTotal(totalCarrinho);
+        }
+
+        setCarregandoCupom(false);
+    }
 
     const handleMoneyValue = (valor) => {
         return valor.toLocaleString('pt-BR', {
@@ -66,8 +101,20 @@ export default function Carrinho(cart) {
                         ))}
                     </div>
 
-                    <div className="d-flex mb-3">
-                        <div className="ms-auto p-2">
+                    <div className="d-flex align-items-end flex-column mb-3 mt-2">
+                        {cupomAplicado && !carregandoCupom ?
+                            <>
+                                <div>
+                                    <h5>Subtotal: {handleMoneyValue(totalParcial)}</h5>
+                                </div>
+
+                                <div>
+                                    <h5>Desconto: {handleMoneyValue(descontoCupom)}</h5>
+                                </div>
+                            </> :
+                            <></>
+                        }
+                        <div >
                             <h5><strong>Total: {handleMoneyValue(valorTotal)}</strong></h5>
                         </div>
                     </div>

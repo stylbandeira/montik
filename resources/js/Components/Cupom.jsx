@@ -1,35 +1,37 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 
-export default function Cupom() {
+export default function Cupom({ cupomAplicado, setCupomAplicado }) {
     const [cupom, setCupom] = useState('');
-
-    const handleChange = (e) => {
-        console.log('aa')
-        // e.preventDefault();
-    }
-
-    // const handleCupom = (e) => {
-    //     e.preventDefault()
-    //     const response = axios.get('/api/cupons', {
-    //         params: {
-    //             codigo: cupom
-    //         }
-    //     });
-
-    //     console.log(response);
-    // }
 
     const handleCupom = async (e) => {
         e.preventDefault()
-        const response = await axios.get('/api/cupons', {
-            params: {
-                codigo: cupom
-            }
-        });
+        try {
+            const response = await axios.get('/api/cupons', {
+                params: {
+                    codigo: cupom
+                }
+            });
 
-        console.log(response.data);
+            localStorage.setItem('cupomAplicado', JSON.stringify(response.data.cupom));
+            setCupomAplicado(response.data.cupom);
+        } catch (error) {
+            console.error(response.message)
+            setCupomAplicado(null);
+        }
+
+        //INSERE NO CARRINHO O CUPOM
+        //(DENTRO DO CÁLCULO DO COMPONENTE CARRINHO, SÃO ATUALIZADOS OS VALORES)
+
+        // console.log(response.data);
     }
+
+    useEffect(() => {
+        const cupomGuardado = JSON.parse(localStorage.getItem('cupomAplicado'));
+
+        setCupomAplicado(cupomGuardado);
+        cupomGuardado ? setCupom(cupomGuardado.codigo) : setCupom('')
+    }, []);
 
     return (
         <>
@@ -40,6 +42,7 @@ export default function Cupom() {
                         className='w-100'
                         placeholder='Digite o Cupom'
                         onChange={(e) => setCupom(e.target.value)}
+                        value={cupom}
                     />
 
                     <button

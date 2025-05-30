@@ -15,6 +15,8 @@ export default function Checkout() {
     const [cidade, setCidade] = useState('');
     const [estado, setEstado] = useState('');
 
+    const [cupomAplicado, setCupomAplicado] = useState(null);
+
 
     const cart = JSON.parse(localStorage.getItem('carrinho')) || [];
 
@@ -148,8 +150,8 @@ export default function Checkout() {
                 </form>
             </div>
             <div className="col-md-6 card">
-                <Carrinho cart={cart}></Carrinho>
-                <Cupom></Cupom>
+                <Carrinho cart={cart} cupomAplicado={cupomAplicado}></Carrinho>
+                <Cupom cupomAplicado={cupomAplicado} setCupomAplicado={setCupomAplicado}></Cupom>
             </div>
 
         </div>

@@ -8,6 +8,8 @@ export default function Comprar() {
     const [itens, setItens] = useState([]);
     const [cart, setCart] = useState([]);
 
+    const [cupomAplicado, setCupomAplicado] = useState(null);
+
     useEffect(() => {
         axios.get('api/produtos/variacoes-disponiveis')
             .then(response => {
@@ -133,7 +135,7 @@ export default function Comprar() {
             </div>
             <div className="col-md-6 card">
                 <div className="sticky-cart">
-                    <Carrinho cart={cart}></Carrinho>
+                    <Carrinho cart={cart} cupomAplicado={cupomAplicado}></Carrinho>
                     <button className='btn btn-success w-100' onClick={checkout}>Continuar para checkout</button>
                 </div>
             </div>
