@@ -29,20 +29,19 @@ class PedidoController extends Controller
      */
     public function create(Request $request)
     {
-        return Inertia::render('Checkout', []);
         //PEGAR EMAIL
         //PEGAR CEP E ENDEREÇO
-        // if (!$request->email || $request->user()->email) {
-        //     return response([
-        //         'message' => 'Email necessário'
-        //     ]);
-        // }
+        if (!$request->email || $request->user()->email) {
+            return response([
+                'message' => 'Email necessário'
+            ]);
+        }
 
-        // if ($request->user()) {
-        // } else {
-        //     // CRIA UM PRE_PEDIDO OU RECUPERA O PRE-PEDIDO BASEADO NO UUID
-        //     $pre_pedido = PrePedido::firstOrNew(['uuid' => $request->uuid]);
-        // }
+        if ($request->user()) {
+        } else {
+            // CRIA UM PRE_PEDIDO OU RECUPERA O PRE-PEDIDO BASEADO NO UUID
+            $pre_pedido = PrePedido::firstOrNew(['uuid' => $request->uuid]);
+        }
     }
 
     /**
@@ -83,9 +82,8 @@ class PedidoController extends Controller
 
         }
 
-        //SE O USUÁRIO TIVER LOGADO, JOGAR O PRE_PEDIDO_ITENS PARA O CARRINHO TAMBÉM
         //REDIRECIONA PARA A PÁGINA DE CHECKOUT
-        // $this->create();
+        $this->create();
 
         //####### PARA DEPOIS ###########
         //DEVE SER CRIADO UM JOB PARA REMOVER OS PEDIDOS EM PRE_PEDIDO QUE TENHAM MAIS DE 3 DIAS DE CRIAÇÃO

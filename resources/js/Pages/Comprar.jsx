@@ -134,10 +134,7 @@ export default function Comprar() {
             <div className="col-md-6 card">
                 <div className="sticky-cart">
                     <Carrinho cart={cart}></Carrinho>
-                </div>
-
-                <div className="card mt-4">
-                    <button className='btn btn-success' onClick={checkout}>Continuar para checkout</button>
+                    <button className='btn btn-success w-100' onClick={checkout}>Continuar para checkout</button>
                 </div>
             </div>
         </div>
