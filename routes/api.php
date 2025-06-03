@@ -31,3 +31,4 @@ Route::resource('produtos', ProdutoController::class);
 Route::resource('opcoesvariacoes', OpcoesVariacoesController::class);
 Route::resource('estoques', EstoqueController::class);
 Route::resource('cupons', CupomController::class);
+Route::post('cupons/valida', [CupomController::class, 'validaCupom']);
