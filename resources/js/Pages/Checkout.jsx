@@ -7,26 +7,49 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 
 export default function Checkout() {
-    const [CEP, setCEP] = useState('');
+    const [cep, setCep] = useState('');
     const [rua, setRua] = useState('');
     const [numero, setNumero] = useState('');
     const [complemento, setComplemento] = useState('');
     const [bairro, setBairro] = useState('');
     const [cidade, setCidade] = useState('');
     const [estado, setEstado] = useState('');
-
+    const [frete, setFrete] = useState(0);
     const [cupomAplicado, setCupomAplicado] = useState(null);
 
+    useEffect(() => {
+        requestAnimationFrame(() => {
+            calculaFrete();
+        });
 
-    const cart = JSON.parse(localStorage.getItem('carrinho')) || [];
+        carrinho.frete = frete;
+
+        localStorage.setItem('carrinho', JSON.stringify(carrinho));
+    }, []);
+
+    const calculaFrete = () => {
+        const totalParcial = carrinho.reduce((soma, produto) => soma + produto.total_parcial, 0);
+        let novoFrete = 0;
+
+        if (totalParcial >= 52 && totalParcial <= 166.59) {
+            novoFrete = 15;
+        } else if (totalParcial < 52) {
+            novoFrete = 20;
+        }
+
+        setFrete(novoFrete);
+    }
+
+
+    const carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
 
     const pesquisaCEP = async (e) => {
         const valor = e.target.value.replace(/\D/g, 1);
-        setCEP(valor);
+        setCep(valor);
         console.log(valor, valor.length);
 
-        if (CEP.length === 8) {
-            const response = await axios.get(`https://viacep.com.br/ws/${CEP}/json/`);
+        if (cep.length === 8) {
+            const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
             console.log(response.data);
 
             setRua(response.data.logradouro)
@@ -36,25 +59,42 @@ export default function Checkout() {
         }
     }
 
-    const finalizarCompra = async () => {
+    const finalizarCompra = async (res) => {
         const uuid = localStorage.getItem('uuid');
-        // try {
-        //     await axios.post('/pedidos', {
-        //         carrinho,
-        //         uuid
-        //     })
+        console.log(carrinho);
 
-        //     localStorage.removeItem('carrinho');
-        // } catch (error) {
-        //     console.error('Erro ao finalizar compra', error);
-        //     alert('Ocorreu um erro ao finalizar sua compra. Tente novamente');
-        // }
+        try {
+            await axios.post('/pedidos', {
+                carrinho,
+                uuid,
+                rua,
+                numero,
+                complemento,
+                bairro,
+                cidade,
+                estado,
+                cep,
+                frete,
+                cupom: cupomAplicado
+            })
+
+            if (res.status === 400) {
+                const data = await res.json();
+                alert(data.message);
+            }
+
+
+        } catch (error) {
+            console.error('Erro ao finalizar compra', error);
+            alert('Ocorreu um erro ao finalizar sua compra. Tente novamente');
+        }
     };
 
     return <>
         <div className="row">
             <div className="col-md-6">
                 <form className="mb-4 p-4 border rounded shadow-sm bg-light">
+                    { }
                     <h5 className="mb-4">Endereço de Entrega</h5>
 
                     <div className="row g-3">
@@ -139,22 +179,22 @@ export default function Checkout() {
                                 type="text"
                                 id="estado"
                                 onChange={pesquisaCEP}
-                                value={CEP}
+                                value={cep}
                             />
                         </div>
                     </div>
 
-                    <button type="submit" className="btn btn-success w-100 mt-3">
+                    <button type="submit" onClick={finalizarCompra} className="btn btn-success w-100 mt-3">
                         Finalizar Compra
                     </button>
                 </form>
             </div>
             <div className="col-md-6 card">
-                <Carrinho cart={cart} cupomAplicado={cupomAplicado}></Carrinho>
-                <Cupom cupomAplicado={cupomAplicado} setCupomAplicado={setCupomAplicado}></Cupom>
+                <Carrinho cart={carrinho} cupomAplicado={cupomAplicado} frete={frete}></Carrinho>
+                <Cupom carrinho={carrinho} cupomAplicado={cupomAplicado} setCupomAplicado={setCupomAplicado}></Cupom>
             </div>
 
-        </div>
+        </div >
     </>;
 }
 
