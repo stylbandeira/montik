@@ -1,36 +1,47 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 
-export default function Cupom({ cupomAplicado, setCupomAplicado }) {
+export default function Cupom({ carrinho, cupomAplicado, setCupomAplicado }) {
     const [cupom, setCupom] = useState('');
+    const [subTotalCarrinho, setSubtotalCarrinho] = useState(0);
 
     const handleCupom = async (e) => {
-        e.preventDefault()
+        e.preventDefault();
         try {
-            const response = await axios.get('/api/cupons', {
-                params: {
-                    codigo: cupom
+            // const response = await axios.post('/api/cupons/valida', {
+            //     params: {
+            //         codigo: cupom,
+            //         subtotalPedido: subTotalCarrinho
+            //     }
+            // });
+
+            const response = await axios.post('/api/cupons/valida', {
+                codigo: cupom,
+                subtotalPedido: parseFloat(subTotalCarrinho).toFixed(2)
+            }, {
+                headers: {
+                    'Content-Type': 'application/json'
                 }
             });
 
             localStorage.setItem('cupomAplicado', JSON.stringify(response.data.cupom));
             setCupomAplicado(response.data.cupom);
         } catch (error) {
-            console.error(response.message)
+            if (error.response && error.response.status === 400) {
+                alert(error.response.data.message);
+            } else {
+                alert('Erro inesperado. Tente novamente');
+            }
             setCupomAplicado(null);
         }
-
-        //INSERE NO CARRINHO O CUPOM
-        //(DENTRO DO CÁLCULO DO COMPONENTE CARRINHO, SÃO ATUALIZADOS OS VALORES)
-
-        // console.log(response.data);
     }
 
     useEffect(() => {
         const cupomGuardado = JSON.parse(localStorage.getItem('cupomAplicado'));
+        setSubtotalCarrinho(carrinho.reduce((soma, produto) => soma + produto.total_parcial, 0));
 
         setCupomAplicado(cupomGuardado);
-        cupomGuardado ? setCupom(cupomGuardado.codigo) : setCupom('')
+        setCupom(cupomGuardado?.codigo ?? '');
     }, []);
 
     return (
