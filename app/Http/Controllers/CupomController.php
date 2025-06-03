@@ -36,6 +36,44 @@ class CupomController extends Controller
         return $cupom->all();
     }
 
+    public function validaCupom(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'subtotalPedido' => 'required|decimal:2',
+            'codigo' => 'required|string'
+        ]);
+
+        if ($validator->fails()) {
+            Log::alert(['FALHOU' => $validator->errors()]);
+            return response([
+                'errors' => $validator->errors()
+            ]);
+        }
+
+        $cupom = Cupom::where('codigo', $request->codigo)
+            ->where('quantidade', '>', 0);
+
+        if (!$cupom->count()) {
+            return response([
+                'message' => 'Cupom não encontrado'
+            ], 400);
+        }
+
+        $cupom->where('val_minimo', '<', $request->subtotalPedido);
+
+        if (!$cupom->count()) {
+            return response([
+                'message' => 'Valor mínimo abaixo do permitido!'
+            ], 400);
+        }
+
+        Log::alert(['cupom' => $cupom->first()]);
+
+        return response([
+            'cupom' => $cupom->first()
+        ]);
+    }
+
     /**
      * Show the form for creating a new resource.
      *
