@@ -2,12 +2,11 @@ import { useEffect, useState } from 'react';
 import Frete from './Frete';
 import { router } from '@inertiajs/react';
 
-export default function Carrinho({ cart, cupomAplicado }) {
+export default function Carrinho({ cart, cupomAplicado, frete }) {
     const [carrinho, setCarrinho] = useState([]);
     const [totalParcial, setTotalParcial] = useState(0);
     const [valorTotal, setValorTotal] = useState(0);
     const [descontoCupom, setDescontoCupom] = useState(0);
-    // const [cupomAplicado, setCupomAplicado] = useState([]);
     const [carregandoCupom, setCarregandoCupom] = useState(true)
 
     useEffect(() => {
@@ -111,6 +110,17 @@ export default function Carrinho({ cart, cupomAplicado }) {
                                 <div>
                                     <h5>Desconto: {handleMoneyValue(descontoCupom)}</h5>
                                 </div>
+
+                                {frete ?
+                                    <div>
+                                        {/* {console.log({ frete: carrinho.frete })} */}
+                                        <h5>Frete: {handleMoneyValue(frete)}</h5>
+                                    </div> :
+                                    <div>
+                                        {/* {console.log({ frete: carrinho.frete })} */}
+                                        <h5>Frete: {handleMoneyValue(0)}</h5>
+                                    </div>
+                                }
                             </> :
                             <></>
                         }
