@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\PedidoConfirmado;
 use App\Models\Endereco;
 use App\Models\Estoque;
 use App\Models\PrePedido;
 use App\Models\PrePedidoItens;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 
@@ -64,7 +66,13 @@ class PedidoController extends Controller
             'cidade' => 'required|string',
             'estado' => 'required|string',
             'cep' => 'required|integer',
-            'frete' => 'required|decimal:2:8'
+            'frete' => 'required|decimal:2:8',
+            'email' => 'required|email',
+            //FALTA
+            'subtotal' => 'required|decimal:2:8',
+            'descontos' => 'required|decimal:2:8',
+            'total' => 'required|decimal:2:8'
+            //FALTA
         ]);
 
         if ($validator->fails()) {
@@ -92,6 +100,9 @@ class PedidoController extends Controller
 
             $pre_pedido->id_endereco = $endereco->id;
             $pre_pedido->frete = $request->frete;
+            $pre_pedido->subtotal = $request->subtotal;
+            $pre_pedido->descontos = $request->descontos;
+            $pre_pedido->total = $request->total;
         }
 
         //CRIA O ENDEREÇO ANYWAY
@@ -141,6 +152,15 @@ class PedidoController extends Controller
             // #### ANTIGA LÓGICA ####
 
         }
+
+        //ENVIA E-MAIL
+        $pedido = [
+            'email' => $request->email,
+            'total' => $pre_pedido->total,
+            'itens' => $pre_pedido_itens
+        ];
+        Mail::to($pedido['email'])->send(new PedidoConfirmado($pedido));
+        //ENVIA E-MAIL
 
         //APÓS CRIAR O PRE_PEDIDO, RETORNA O PEDIDO,
 

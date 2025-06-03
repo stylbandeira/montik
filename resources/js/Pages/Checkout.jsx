@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 
 export default function Checkout() {
     const [cep, setCep] = useState('');
+    const [email, setEmail] = useState('');
     const [rua, setRua] = useState('');
     const [numero, setNumero] = useState('');
     const [complemento, setComplemento] = useState('');
@@ -75,7 +76,7 @@ export default function Checkout() {
                 estado,
                 cep,
                 frete,
-                cupom: cupomAplicado
+                cupom: cupomAplicado,
             })
 
             if (res.status === 400) {
@@ -95,9 +96,26 @@ export default function Checkout() {
             <div className="col-md-6">
                 <form className="mb-4 p-4 border rounded shadow-sm bg-light">
                     { }
+                    <div className="row g-3">
+                        <h5 className="mb-4">Dados</h5>
+                        <div className="col-md-6">
+                            <label htmlFor="email" className="form-label">Email</label>
+                            <input
+                                className="form-control"
+                                name="email"
+                                type="email"
+                                id="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
+                        </div>
+                    </div>
+
+                    <hr />
                     <h5 className="mb-4">Endereço de Entrega</h5>
 
                     <div className="row g-3">
+
                         <div className="col-md-8">
                             <label htmlFor="rua" className="form-label">Rua</label>
                             <input
