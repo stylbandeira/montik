@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 button {
     background-color: rgb(178, 169, 187);
     padding: 1em;
@@ -16,4 +17,8 @@ button {
 
 .money {
     color: green;
+}
+
+.bi-cart {
+    color: white;
 }

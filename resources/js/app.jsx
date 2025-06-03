@@ -7,6 +7,8 @@ import 'bootstrap'; // JS funcionalidade do Bootstrap (modais, tooltips, etc.)
 import { createRoot } from 'react-dom/client';
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
+import 'bootstrap-icons/font/bootstrap-icons.css';
+
 
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
 
