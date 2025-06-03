@@ -65,6 +65,7 @@ export default function Comprar() {
         setCart(carrinhoAtual);
 
         //Remove os itens do carrinho -- REMOVER AO FIM
+        // localStorage.setItem('cupom', JSON.stringify([]));
         // localStorage.setItem('carrinho', JSON.stringify([]));
 
         alert('Produto adicionado ao carrinho!');
