@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\PedidoConfirmado;
 use App\Models\Endereco;
 use App\Models\Estoque;
+use App\Models\Pedido;
 use App\Models\PrePedido;
 use App\Models\PrePedidoItens;
 use Illuminate\Http\Request;
@@ -30,23 +31,7 @@ class PedidoController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(Request $request)
-    {
-        return Inertia::render('Checkout', []);
-        //PEGAR EMAIL
-        //PEGAR CEP E ENDEREÇO
-        // if (!$request->email || $request->user()->email) {
-        //     return response([
-        //         'message' => 'Email necessário'
-        //     ]);
-        // }
-
-        // if ($request->user()) {
-        // } else {
-        //     // CRIA UM PRE_PEDIDO OU RECUPERA O PRE-PEDIDO BASEADO NO UUID
-        //     $pre_pedido = PrePedido::firstOrNew(['uuid' => $request->uuid]);
-        // }
-    }
+    public function create(Request $request) {}
 
     /**
      * Store a newly created resource in storage.
@@ -56,8 +41,6 @@ class PedidoController extends Controller
      */
     public function store(Request $request)
     {
-        Log::alert($request->all());
-        //VALIDA OS DADOS DE ENDEREÇO
         $validator = Validator::make($request->all(), [
             'rua' => 'required|string',
             'numero' => 'required|string',
@@ -66,28 +49,29 @@ class PedidoController extends Controller
             'cidade' => 'required|string',
             'estado' => 'required|string',
             'cep' => 'required|integer',
-            'frete' => 'required|decimal:2:8',
+            'frete' => 'required|decimal:2',
             'email' => 'required|email',
-            //FALTA
-            'subtotal' => 'required|decimal:2:8',
-            'descontos' => 'required|decimal:2:8',
-            'total' => 'required|decimal:2:8'
-            //FALTA
+            'nome' => 'required|string',
+            'subtotal' => 'required|decimal:2',
+            'descontos' => 'required|decimal:2',
+            'total' => 'required|decimal:2'
         ]);
 
         if ($validator->fails()) {
+
             return response([
                 'errors' => $validator->errors()
             ]);
         }
 
-        //VERIFICA SE O USUÁRIO ESTÁ LOGADO OU NÃO
+        // CRIA UM PRE_PEDIDO OU RECUPERA O PRE-PEDIDO BASEADO NO UUID
+        $pre_pedido = PrePedido::firstOrNew(['uuid' => $request->uuid]);
+
         if ($request->user()) {
         } else {
-            // CRIA UM PRE_PEDIDO OU RECUPERA O PRE-PEDIDO BASEADO NO UUID
-            $pre_pedido = PrePedido::firstOrNew(['uuid' => $request->uuid]);
+
             // SE FOR O MESMO UUID E O MESMO ENDEREÇO, APENAS PEGA O ENDEREÇO.
-            $endereco = Endereco::firstOrNew([
+            $endereco = Endereco::firstOrCreate([
                 'uuid' => $request->uuid,
                 'rua' => $request->rua,
                 'numero' => $request->numero,
@@ -99,13 +83,20 @@ class PedidoController extends Controller
             ]);
 
             $pre_pedido->id_endereco = $endereco->id;
+            $pre_pedido->id_cupom = $request->cupom['id'] ?? null;
+            $pre_pedido->email = $request->email;
             $pre_pedido->frete = $request->frete;
             $pre_pedido->subtotal = $request->subtotal;
             $pre_pedido->descontos = $request->descontos;
             $pre_pedido->total = $request->total;
+            $pre_pedido->save();
         }
 
-        //CRIA O ENDEREÇO ANYWAY
+        // SE FOR O MESMO UUID E O MESMO ENDEREÇO, APENAS PEGA O ENDEREÇO.
+        $endereco = Endereco::firstOrNew([
+            'uuid' => $request->uuid,
+        ]);
+
         $endereco->rua = $request->rua;
         $endereco->numero = $request->numero;
         $endereco->complemento = $request->complemento;
@@ -113,7 +104,7 @@ class PedidoController extends Controller
         $endereco->cidade = $request->cidade;
         $endereco->estado = $request->estado;
         $endereco->cep = $request->cep;
-        // $endereco->save();
+        $endereco->save();
 
         //RODA DENTRO DOS PRODUTOS
         foreach ($request->carrinho as $produtos) {
@@ -143,41 +134,51 @@ class PedidoController extends Controller
             $pre_pedido_itens->quantidade = $produtos['quantidade'];
             $pre_pedido_itens->id_produto_variacoes = $produtos['id_produto_variacao'];
             $pre_pedido_itens->id_pre_pedido = $pre_pedido->id;
-            // $pre_pedido_itens->save();
-
-            // #### ANTIGA LÓGICA ####
-            //CASO EXISTA AQUELA QUANTIDADE, O ESTOQUE É ATUALIZADO E ADICIONADO AO PRE_PEDIDO_ITENS
-            // $estoque->quantidade -= $produtos['quantidade'];
-            // $estoque->save();
-            // #### ANTIGA LÓGICA ####
-
+            $pre_pedido_itens->save();
         }
 
         //ENVIA E-MAIL
         $pedido = [
+            'id' => $pre_pedido->id,
+            'status' => $pre_pedido->status,
             'email' => $request->email,
             'total' => $pre_pedido->total,
-            'itens' => $pre_pedido_itens
+            'itens' => $pre_pedido_itens,
+            'nome' => $request->nome,
+            'link' => $pre_pedido->pedido_url
         ];
         Mail::to($pedido['email'])->send(new PedidoConfirmado($pedido));
-        //ENVIA E-MAIL
 
-        //APÓS CRIAR O PRE_PEDIDO, RETORNA O PEDIDO,
+        return response([
+            'message' => 'Pedido feito com sucesso!'
+        ]);
 
         //####### PARA DEPOIS ###########
         //DEVE SER CRIADO UM JOB PARA REMOVER OS PEDIDOS EM PRE_PEDIDO QUE TENHAM MAIS DE 3 DIAS DE CRIAÇÃO
+        //E NÃO TENHAM SIDO CONFIRMADOS.
 
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($codigo)
     {
-        //
+        $pedido = PrePedido::where('id', $codigo)
+            ->orWhere('codigo', $codigo)
+            ->first();
+
+        if (!$pedido) {
+            return response([
+                'message' => 'Pedido não encontrado'
+            ], 404);
+        }
+
+        return Inertia::render('Pedidos/PedidoDetalhes', [
+            'pedido' => $pedido
+        ]);
     }
 
     /**
@@ -200,17 +201,49 @@ class PedidoController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'status' => 'required|string'
+        ]);
+
+        if ($validator->fails()) {
+            return response([
+                'errors' => $validator->errors()
+            ]);
+        }
+
+        if ($request->pre_pedido) {
+            $pedido = PrePedido::find($id);
+        } else {
+            $pedido = Pedido::find($id);
+        }
+
+        //### PARA DEPOIS ###
+        //SE O PEDIDO FOR CONFIRMADO, CRIA PEDIDO E REMOVE DO ESTOQUE
+        $pedido->status = $request->status;
+        $pedido->save();
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($codigo)
     {
-        //
+        $pedido = PrePedido::where('codigo', $codigo)
+            ->orWhere('id', $codigo)
+            ->first();
+
+        if (!$pedido) {
+            return response([
+                'message' => 'Pedido não encontrado'
+            ], 404);
+        }
+
+        $pedido->delete();
+
+        return response([
+            'message' => 'Pedido cancelado com sucesso!'
+        ], 200);
     }
 }
