@@ -7,6 +7,10 @@ import { useEffect, useState } from 'react';
 export default function Comprar() {
     const [itens, setItens] = useState([]);
     const [cart, setCart] = useState([]);
+    const [frete, setFrete] = useState(0);
+    const [totalParcial, setTotalParcial] = useState(0);
+    const [descontoCupom, setDescontoCupom] = useState(0);
+    const [valorTotal, setValorTotal] = useState(0);
 
     const [cupomAplicado, setCupomAplicado] = useState(null);
 
@@ -136,7 +140,17 @@ export default function Comprar() {
             </div>
             <div className="col-md-6 card">
                 <div className="sticky-cart">
-                    <Carrinho cart={cart} cupomAplicado={cupomAplicado}></Carrinho>
+                    <Carrinho
+                        cart={cart}
+                        cupomAplicado={cupomAplicado}
+                        frete={frete}
+                        totalParcial={totalParcial}
+                        descontoCupom={descontoCupom}
+                        valorTotal={valorTotal}
+                        setTotalParcial={setTotalParcial}
+                        setDescontoCupom={setDescontoCupom}
+                        setValorTotal={setValorTotal}
+                    ></Carrinho>
                     <button className='btn btn-success w-100' onClick={checkout}>Continuar para checkout</button>
                 </div>
             </div>
