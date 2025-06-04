@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 
 export default function Checkout() {
     const [cep, setCep] = useState('');
+    const [nome, setNome] = useState('');
     const [email, setEmail] = useState('');
     const [rua, setRua] = useState('');
     const [numero, setNumero] = useState('');
@@ -16,6 +17,9 @@ export default function Checkout() {
     const [cidade, setCidade] = useState('');
     const [estado, setEstado] = useState('');
     const [frete, setFrete] = useState(0);
+    const [totalParcial, setTotalParcial] = useState(0);
+    const [descontoCupom, setDescontoCupom] = useState(0);
+    const [valorTotal, setValorTotal] = useState(0);
     const [cupomAplicado, setCupomAplicado] = useState(null);
 
     useEffect(() => {
@@ -75,11 +79,21 @@ export default function Checkout() {
                 cidade,
                 estado,
                 cep,
-                frete,
+                email,
+                nome,
+                frete: frete.toFixed(2),
                 cupom: cupomAplicado,
+                subtotal: totalParcial.toFixed(2),
+                descontos: descontoCupom.toFixed(2),
+                total: valorTotal.toFixed(2)
             })
 
             if (res.status === 400) {
+                const data = await res.json();
+                alert(data.message);
+            }
+
+            if (res.status === 200) {
                 const data = await res.json();
                 alert(data.message);
             }
@@ -107,6 +121,18 @@ export default function Checkout() {
                                 id="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
+                            />
+                        </div>
+
+                        <div className="col-md-6">
+                            <label htmlFor="nome" className="form-label">Nome</label>
+                            <input
+                                className="form-control"
+                                name="nome"
+                                type="nome"
+                                id="nome"
+                                value={nome}
+                                onChange={(e) => setNome(e.target.value)}
                             />
                         </div>
                     </div>
@@ -208,7 +234,17 @@ export default function Checkout() {
                 </form>
             </div>
             <div className="col-md-6 card">
-                <Carrinho cart={carrinho} cupomAplicado={cupomAplicado} frete={frete}></Carrinho>
+                <Carrinho
+                    cart={carrinho}
+                    cupomAplicado={cupomAplicado}
+                    frete={frete}
+                    totalParcial={totalParcial}
+                    descontoCupom={descontoCupom}
+                    valorTotal={valorTotal}
+                    setTotalParcial={setTotalParcial}
+                    setDescontoCupom={setDescontoCupom}
+                    setValorTotal={setValorTotal}
+                ></Carrinho>
                 <Cupom carrinho={carrinho} cupomAplicado={cupomAplicado} setCupomAplicado={setCupomAplicado}></Cupom>
             </div>
 
