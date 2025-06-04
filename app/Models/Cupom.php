@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -17,6 +18,11 @@ class Cupom extends Model
         'tipo_desconto',
         'desconto',
         'quantidade',
-        'codigo'
+        'codigo',
+        'val_minimo'
+    ];
+
+    protected $casts = [
+        'valido_ate' => 'datetime:d/m/Y',
     ];
 }

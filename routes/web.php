@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\CupomController;
 use App\Http\Controllers\EstoqueController;
 use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\ProdutoController;
@@ -60,5 +61,7 @@ Route::post('/pedidos', [PedidoController::class, 'store'])->name('pedido.store'
 Route::get('/pedidos', [PedidoController::class, 'create'])->name('pedido.create');
 Route::get('/pedidos/{codigo}', [PedidoController::class, 'show'])->name('pedido.show');
 Route::delete('/pedidos/{codigo}', [PedidoController::class, 'destroy'])->name('pedido.destroy');
+
+Route::get('cupons/', [CupomController::class, 'create'])->name('cupom.create');
 
 require __DIR__ . '/auth.php';

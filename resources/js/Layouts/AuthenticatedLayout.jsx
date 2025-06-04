@@ -24,6 +24,12 @@ export default function Authenticated({ auth, header, children }) {
                             </li>
 
                             <li className="nav-item">
+                                <Link className="nav-link active" href="/cupons">
+                                    Cupons
+                                </Link>
+                            </li>
+
+                            <li className="nav-item">
                                 <Link className="nav-link active" href="/logout">
                                     Logout
                                 </Link>

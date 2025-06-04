@@ -6,6 +6,7 @@ use App\Models\Cupom;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
 
 class CupomController extends Controller
 {
@@ -16,24 +17,29 @@ class CupomController extends Controller
      */
     public function index(Request $request)
     {
-        $cupom = Cupom::query();
+        // $cupom = Cupom::query();
 
-        if ($request->has('codigo')) {
-            $cupom->where('codigo', $request->codigo)
-                ->where('quantidade', '>', 0);
+        // if ($request->has('codigo')) {
+        //     $cupom->where('codigo', $request->codigo)
+        //         ->where('quantidade', '>', 0);
 
-            if ($cupom->count()) {
-                return response([
-                    'cupom' => $cupom->first()
-                ]);
-            }
+        //     if ($cupom->count()) {
+        //         return response([
+        //             'cupom' => $cupom->first()
+        //         ]);
+        //     }
 
-            return response([
-                'message' => 'Cupom não encontrado.'
-            ], 400);
-        }
+        //     return response([
+        //         'message' => 'Cupom não encontrado.'
+        //     ], 400);
+        // }
 
-        return $cupom->all();
+        // return $cupom->all();
+        $cupons = Cupom::all();
+
+        return response([
+            'cupons' => $cupons
+        ]);
     }
 
     public function validaCupom(Request $request)
@@ -79,7 +85,11 @@ class CupomController extends Controller
      */
     public function create()
     {
-        //
+        $cupons = Cupom::all();
+
+        return Inertia::render('Cupons', [
+            'cupons' => $cupons
+        ]);
     }
 
     /**
@@ -90,15 +100,19 @@ class CupomController extends Controller
      */
     public function store(Request $request)
     {
+        Log::alert($request->val_minimo);
+        Log::alert($request->desconto);
+
         $validator = Validator::make($request->all(), [
             'valido_ate' => 'required|date',
             'tipo_desconto' => 'required|string',
-            'desconto' => 'required|decimal:2,6',
+            'desconto' => 'required|decimal:2',
             'quantidade' => 'required|integer',
             'codigo' => 'required|unique:cupons,codigo'
         ]);
 
         if ($validator->fails()) {
+            Log::alert($validator->errors());
             return response([
                 'errors' => $validator->errors()
             ]);
@@ -106,7 +120,9 @@ class CupomController extends Controller
 
         $cupom = Cupom::create($request->all());
 
-        return response($cupom);
+        return response([
+            'cupom' => $cupom
+        ]);
     }
 
     /**
