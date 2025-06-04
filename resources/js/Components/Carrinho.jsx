@@ -2,11 +2,8 @@ import { useEffect, useState } from 'react';
 import Frete from './Frete';
 import { router } from '@inertiajs/react';
 
-export default function Carrinho({ cart, cupomAplicado, frete }) {
+export default function Carrinho({ cart, cupomAplicado, frete, setTotalParcial, setDescontoCupom, setValorTotal, totalParcial, valorTotal, descontoCupom }) {
     const [carrinho, setCarrinho] = useState([]);
-    const [totalParcial, setTotalParcial] = useState(0);
-    const [valorTotal, setValorTotal] = useState(0);
-    const [descontoCupom, setDescontoCupom] = useState(0);
     const [carregandoCupom, setCarregandoCupom] = useState(true)
 
     useEffect(() => {
@@ -17,7 +14,7 @@ export default function Carrinho({ cart, cupomAplicado, frete }) {
         }
 
         carregaCupom();
-    }, [cart]);
+    }, [cart, cupomAplicado, frete]);
 
     useEffect(() => {
         const carrinho = cart;
@@ -48,9 +45,9 @@ export default function Carrinho({ cart, cupomAplicado, frete }) {
 
         if (cupomAplicado) {
             setTotalParcial(totalCarrinho);
-            setValorTotal(totalCarrinho - desconto);
+            setValorTotal(totalCarrinho + frete - desconto);
         } else {
-            setValorTotal(totalCarrinho);
+            setValorTotal(totalCarrinho + frete);
         }
 
         setCarregandoCupom(false);
@@ -110,19 +107,15 @@ export default function Carrinho({ cart, cupomAplicado, frete }) {
                                 <div>
                                     <h5>Desconto: {handleMoneyValue(descontoCupom)}</h5>
                                 </div>
-
-                                {frete ?
-                                    <div>
-                                        {/* {console.log({ frete: carrinho.frete })} */}
-                                        <h5>Frete: {handleMoneyValue(frete)}</h5>
-                                    </div> :
-                                    <div>
-                                        {/* {console.log({ frete: carrinho.frete })} */}
-                                        <h5>Frete: {handleMoneyValue(0)}</h5>
-                                    </div>
-                                }
                             </> :
                             <></>
+                        }
+                        {frete ?
+                            <div>
+                                <h5>Frete: {handleMoneyValue(frete)}</h5>
+                            </div> :
+                            <div>
+                            </div>
                         }
                         <div >
                             <h5><strong>Total: {handleMoneyValue(valorTotal)}</strong></h5>
