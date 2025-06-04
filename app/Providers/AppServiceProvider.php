@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\Pedido;
+use App\Models\PrePedido;
+use App\Observers\PedidoObserver;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +26,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        PrePedido::observe(PedidoObserver::class);
     }
 }
