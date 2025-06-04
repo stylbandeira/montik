@@ -8,12 +8,6 @@ export default function Cupom({ carrinho, cupomAplicado, setCupomAplicado }) {
     const handleCupom = async (e) => {
         e.preventDefault();
         try {
-            // const response = await axios.post('/api/cupons/valida', {
-            //     params: {
-            //         codigo: cupom,
-            //         subtotalPedido: subTotalCarrinho
-            //     }
-            // });
 
             const response = await axios.post('/api/cupons/valida', {
                 codigo: cupom,
