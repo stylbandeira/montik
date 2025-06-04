@@ -67,8 +67,6 @@ class CupomController extends Controller
             ], 400);
         }
 
-        Log::alert(['cupom' => $cupom->first()]);
-
         return response([
             'cupom' => $cupom->first()
         ]);
