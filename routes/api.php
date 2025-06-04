@@ -3,6 +3,7 @@
 use App\Http\Controllers\CupomController;
 use App\Http\Controllers\EstoqueController;
 use App\Http\Controllers\OpcoesVariacoesController;
+use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\ProdutoController;
 use App\Http\Controllers\VariacaoController;
 use App\Models\Estoque;
@@ -32,3 +33,6 @@ Route::resource('opcoesvariacoes', OpcoesVariacoesController::class);
 Route::resource('estoques', EstoqueController::class);
 Route::resource('cupons', CupomController::class);
 Route::post('cupons/valida', [CupomController::class, 'validaCupom']);
+
+Route::get('pedidos/{$codigo}', [PedidoController::class, 'show']);
+Route::put('pedidos/{id}', [PedidoController::class, 'update']);
