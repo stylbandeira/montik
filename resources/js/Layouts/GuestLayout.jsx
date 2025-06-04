@@ -29,11 +29,11 @@ export default function Guest({ children }) {
                                 <Link className="nav-link active" href="/pedidos">
                                     <button className="btn position-relative">
                                         <i className="bi bi-cart"></i>
-                                        {carrinho.length > 0 && (
+                                        {carrinho && carrinho.length > 0 ? (
                                             <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                                                 {carrinho.length}
                                             </span>
-                                        )}
+                                        ) : <></>}
                                     </button>
                                 </Link>
                             </li>
